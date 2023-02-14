@@ -1,23 +1,35 @@
+using System;
 using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
 {
-    public float speed = 6f;
+    [Header("Movement")]
+    public float movementSpeed = 6f;
     public float jumpForce = 8f;
     public float jumpDuration = 0.25f;
-    public float gravity = 20f;
-    public float rotateSpeed = 3f;
-    private Vector3 moveDirection = Vector3.zero;
-    private Rigidbody rigidBody;
-    private float jumpStartTime = 0f;
-    private bool isJumping = false;
+    //public float gravity = 20f;
+    public float rotationSpeed = 3f;
 
-    void Start()
+    private Vector3 moveDirection = Vector3.zero;
+    [SerializeField] Rigidbody rigidbody;
+    private float jumpStartTime = 0f;
+    [SerializeField] bool isJumping = false;
+    //[SerializeField] bool isGrounded;
+
+    void FixedUpdate()
     {
-        rigidBody = GetComponent<Rigidbody>();
+        PlayerRotation();
+        PlayerMovement();
+        HandleJump();
+        
     }
 
-    void Update()
+    private void PlayerRotation()
+    {
+        transform.Rotate(0, Input.GetAxis("Mouse X") * rotationSpeed, 0);
+    }
+
+    private void PlayerMovement()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
@@ -26,31 +38,52 @@ public class ThirdPersonController : MonoBehaviour
 
         if (direction.magnitude > 0)
         {
-            rigidBody.velocity = moveDirection * speed;
+            rigidbody.velocity = moveDirection * movementSpeed + Physics.gravity * Time.deltaTime;
         }
         else
         {
-            rigidBody.velocity = Vector3.zero;
+            rigidbody.velocity = Physics.gravity * Time.deltaTime;
         }
+    }
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
-        {
-            isJumping = true;
-            jumpStartTime = Time.time;
-            rigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+    //private void PlayerMovement()
+    //{
+    //    float horizontal = Input.GetAxis("Horizontal");
+    //    float vertical = Input.GetAxis("Vertical");
+    //    Vector3 direction = new Vector3(horizontal, 0, vertical);
+    //    moveDirection = Quaternion.Euler(new Vector3(0, transform.eulerAngles.y, 0)) * direction;
 
-        if (isJumping)
-        {
-            float jumpTime = Time.time - jumpStartTime;
-            if (jumpTime >= jumpDuration || !Input.GetButton("Jump"))
-            {
-                isJumping = false;
-            }
-        }
+    //    if (direction.magnitude > 0)
+    //    {
+    //        rigidbody.velocity = moveDirection * movementSpeed;
+    //    }
+    //    else
+    //    {
+    //        rigidbody.velocity = Vector3.zero;
+    //    }
+    //    //rigidbody.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+    //}
 
-        rigidBody.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
-        transform.Rotate(0, Input.GetAxis("Mouse X") * rotateSpeed, 0);
+
+    private void HandleJump()
+    {
+        if (Input.GetButtonDown("Jump"))
+        rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        //if (Input.GetButtonDown("Jump") && IsGrounded())
+        //{
+        //    isJumping = true;
+        //    jumpStartTime = Time.time;
+        //    rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        //}
+
+        //if (isJumping)
+        //{
+        //    float jumpTime = Time.time - jumpStartTime;
+        //    if (jumpTime >= jumpDuration || !Input.GetButton("Jump"))
+        //    {
+        //        isJumping = false;
+        //    }
+        //}
     }
 
     private bool IsGrounded()
