@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
-
+    [SerializeField] float rotationSpeed;
     public float groundDrag;
 
     [Header("Jump")]
@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody rb;
 
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -54,7 +55,8 @@ public class PlayerMovement : MonoBehaviour
         // ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
 
-        BetterJump();
+        PlayerRotation();
+        BetterJump(); //2 JUMPS>>??
         MyInput();
         SpeedControl();
 
@@ -63,6 +65,11 @@ public class PlayerMovement : MonoBehaviour
             rb.drag = groundDrag;
         else
             rb.drag = 0;
+    }
+
+    private void PlayerRotation()
+    {
+        transform.Rotate(0, Input.GetAxis("Mouse X") * rotationSpeed, 0);
     }
 
     private void BetterJump()
@@ -88,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
+        if (Input.GetButtonDown("Jump") && readyToJump && grounded)
         {
             readyToJump = false;
 
