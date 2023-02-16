@@ -12,10 +12,17 @@ public class Grabber : MonoBehaviour
     public Grabbable heldGrabbable;
 
     public FixedJoint joint;
+    public float rotationSpeed;
 
     void Update()
     {
+        HandleRotation();
         MyInput();
+    }
+
+    private void HandleRotation()
+    {
+        transform.Rotate(-Input.GetAxis("Mouse Y") * rotationSpeed, 0, 0);
     }
 
     private void MyInput()

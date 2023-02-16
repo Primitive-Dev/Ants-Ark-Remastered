@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using System;
 
-public class PlayerMovement : MonoBehaviour
+public class OldPlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
@@ -26,10 +26,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
 
-    [Header("Ground Check")]
-    public float playerHeight;
-    public LayerMask whatIsGround;
+    [Header("Ground Detection")]
+    public LayerMask groundLayer;
+    public float groundDistance = 0.4f;
     bool grounded;
+    //public float playerHeight;
 
     public Transform orientation;
 
@@ -53,10 +54,12 @@ public class PlayerMovement : MonoBehaviour
     {
         //CHANGE TO BE SPHERE CAST TO HAVE BETTER DETECTION
         // ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
+        //grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, groundLayer);
+
+        grounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundLayer);
+
 
         PlayerRotation();
-        BetterJump(); //2 JUMPS>>??
         MyInput();
         SpeedControl();
 
@@ -74,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void BetterJump()
     {
-        if(rb.velocity.y < 0)
+        if (rb.velocity.y < 0)
         {
             rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
@@ -86,6 +89,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        BetterJump(); //2 JUMPS>>??
         MovePlayer();
     }
 
@@ -97,6 +101,8 @@ public class PlayerMovement : MonoBehaviour
         // when to jump
         if (Input.GetButtonDown("Jump") && readyToJump && grounded)
         {
+
+
             readyToJump = false;
 
             Jump();
