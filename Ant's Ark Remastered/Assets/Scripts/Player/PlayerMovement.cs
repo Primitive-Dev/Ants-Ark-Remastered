@@ -6,7 +6,13 @@ public class PlayerMovement : MonoBehaviour
 {
     float playerHeight = 2f;
 
-    [SerializeField] Transform orientation;
+    [SerializeField] Transform camera;
+    //[SerializeField] Transform orientation;
+
+    [Header("Rotation")]
+    [SerializeField] float turnSmoothTime;
+    float turnSmoothVelocity;
+    
 
     [Header("Movement")]
     [SerializeField] float moveSpeed = 6f;
@@ -65,6 +71,9 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
@@ -89,7 +98,16 @@ public class PlayerMovement : MonoBehaviour
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         verticalMovement = Input.GetAxisRaw("Vertical");
 
-        moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
+        //moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
+        moveDirection = camera.forward * verticalMovement + camera.right * horizontalMovement;
+        
+        //Handle Rotation
+        if(moveDirection.magnitude >= 0.1)
+        {
+            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0, angle, 0);
+        }
     }
 
     void Jump()
