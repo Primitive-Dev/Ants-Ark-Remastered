@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
     float playerHeight = 2f;
 
     [SerializeField] Transform camera;
-    //[SerializeField] Transform orientation;
 
     [Header("Rotation")]
     [SerializeField] float turnSmoothTime;
@@ -98,8 +97,18 @@ public class PlayerMovement : MonoBehaviour
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         verticalMovement = Input.GetAxisRaw("Vertical");
 
-        //moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
-        moveDirection = camera.forward * verticalMovement + camera.right * horizontalMovement;
+        //Movement Relative to camera. Ignores up/down movement if camera is looking up/down
+        Vector3 cameraForward = camera.transform.forward;
+        Vector3 cameraRight = camera.transform.right;
+        
+        cameraForward.y = 0;
+        cameraRight.y = 0;
+
+        cameraForward = cameraForward.normalized;
+        cameraRight = cameraRight.normalized;
+
+
+        moveDirection = cameraForward * verticalMovement + cameraRight * horizontalMovement;
         
         //Handle Rotation
         if(moveDirection.magnitude >= 0.1)
