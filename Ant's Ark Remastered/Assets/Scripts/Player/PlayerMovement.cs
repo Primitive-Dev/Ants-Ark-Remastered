@@ -92,6 +92,12 @@ public class PlayerMovement : MonoBehaviour
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
     }
 
+    //SHOWS GROUND CHECK AREA
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(groundCheck.position, groundDistance);
+    }
+
     void MyInput()
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
