@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] float moveSpeed = 6f;
     [SerializeField] float airMultiplier = 0.4f;
-    [SerializeField] float movementMultiplier = 10f;
+    [SerializeField] float movementMultiplier = 2f;
 
     [Header("Sprinting")]
     [SerializeField] float walkSpeed = 4f;
@@ -31,8 +31,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
 
     [Header("Drag")]
-    [SerializeField] float groundDrag = 6f;
-    [SerializeField] float airDrag = 2f;
+    [SerializeField] float groundDrag = 2f;
+    [SerializeField] float airDrag = 0f;
 
     float horizontalMovement;
     float verticalMovement;
@@ -80,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         MyInput();
-        //ControlDrag();
+        ControlDrag();
         ControlSpeed();
 
         if (Input.GetKeyDown(jumpKey) && isGrounded)
@@ -133,6 +133,8 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
+    //COMPARE WITH SPEEDCONTROL FROM OLDPLAYERMOVEMENT SCRIPT FOR SNAPPYIER MOVEMENT
     void ControlSpeed()
     {
         if (Input.GetKey(sprintKey) && isGrounded)
@@ -166,15 +168,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && !OnSlope())
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
         }
         else if (isGrounded && OnSlope())
         {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
         }
         else if (!isGrounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier * Time.deltaTime, ForceMode.Impulse);
+            //rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Impulse);
+            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
         }
     }
 }
