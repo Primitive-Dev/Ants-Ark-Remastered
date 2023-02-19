@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] float moveSpeed = 6f;
     [SerializeField] float airMultiplier = 0.4f;
-    float movementMultiplier = 10f;
+    [SerializeField] float movementMultiplier = 10f;
 
     [Header("Sprinting")]
     [SerializeField] float walkSpeed = 4f;
@@ -80,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         MyInput();
-        ControlDrag();
+        //ControlDrag();
         ControlSpeed();
 
         if (Input.GetKeyDown(jumpKey) && isGrounded)
@@ -166,15 +166,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && !OnSlope())
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * Time.deltaTime, ForceMode.Impulse);
         }
         else if (isGrounded && OnSlope())
         {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier * Time.deltaTime, ForceMode.Impulse);
         }
         else if (!isGrounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Acceleration);
+            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier * Time.deltaTime, ForceMode.Impulse);
         }
     }
 }
