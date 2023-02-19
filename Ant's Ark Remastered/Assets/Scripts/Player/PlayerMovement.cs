@@ -78,7 +78,6 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        print("isGrounded = " + isGrounded);
 
         MyInput();
         ControlDrag();
