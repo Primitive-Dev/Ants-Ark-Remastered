@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class Grabbable : MonoBehaviour
 {
-    [SerializeField] Rigidbody rb;
+    //public Rigidbody playerRb;
+    public Rigidbody rb;
+    public Collider collider;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        collider = GetComponent<Collider>();
+    }
 
     public void Grabbed()
     {
-
-        rb.isKinematic = true;
+        //playerRb.mass += rb.mass;
+        print("Grabbed");
+        collider.isTrigger = true;
     }
     
     public void Dropped()
     {
-        rb.isKinematic = false;
+        //playerRb.mass -= rb.mass;
+        print("Dropped");
+        collider.isTrigger = false;
     }
 }

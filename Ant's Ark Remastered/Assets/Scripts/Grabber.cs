@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Grabber : MonoBehaviour
 {
+
+    
     public bool inGrabRange;
     public Grabbable grabbableInReach;
 
@@ -75,6 +77,10 @@ public class Grabber : MonoBehaviour
     public void Grab()
     {
         heldGrabbable = grabbableInReach;
+        Grabbable grabbable = heldGrabbable;
+
+        grabbable.Grabbed();
+
         joint.connectedBody = heldGrabbable.GetComponent<Rigidbody>();
     
 
@@ -86,6 +92,9 @@ public class Grabber : MonoBehaviour
 
     public void Drop()
     {
+        Grabbable grabbable = heldGrabbable;
+
+        grabbable.Dropped();
         //heldGrabbable.Dropped();
         //heldGrabbable.transform.SetParent(null);
 
