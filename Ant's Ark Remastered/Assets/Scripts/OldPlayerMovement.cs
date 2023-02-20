@@ -61,7 +61,7 @@ public class OldPlayerMovement : MonoBehaviour
 
         PlayerRotation();
         MyInput();
-        //SpeedControl();
+        SpeedControl();
 
         // handle drag
         if (grounded)

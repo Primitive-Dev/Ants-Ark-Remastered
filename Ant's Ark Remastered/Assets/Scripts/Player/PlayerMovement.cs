@@ -15,20 +15,22 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] float moveSpeed = 6f;
-    [SerializeField] float airMultiplier = 0.4f;
-    [SerializeField] float movementMultiplier = 2f;
+    //[SerializeField] float airMultiplier = 0.4f;
+    //[SerializeField] float movementMultiplier = 2f;
 
     [Header("Sprinting")]
     [SerializeField] float walkSpeed = 4f;
-    [SerializeField] float sprintSpeed = 6f;
+    //[SerializeField] float sprintSpeed = 6f;
     [SerializeField] float acceleration = 10f;
 
     [Header("Jumping")]
     public float jumpForce = 5f;
+    [SerializeField] int fallMultiplier;
+    [SerializeField] int lowJumpMultiplier;
 
     [Header("Keybinds")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
-    [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
+    //[SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
 
     [Header("Drag")]
     [SerializeField] float groundDrag = 2f;
@@ -49,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
 
     RaycastHit slopeHit;
+
 
     private bool OnSlope()
     {
@@ -124,6 +127,18 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void BetterJump()
+    {
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        }
+    }
+
     void Jump()
     {
         if (isGrounded)
@@ -137,14 +152,32 @@ public class PlayerMovement : MonoBehaviour
     //COMPARE WITH SPEEDCONTROL FROM OLDPLAYERMOVEMENT SCRIPT FOR SNAPPYIER MOVEMENT
     void ControlSpeed()
     {
-        if (Input.GetKey(sprintKey) && isGrounded)
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        // limit velocity if needed
+        if (flatVel.magnitude > moveSpeed)
         {
-            moveSpeed = Mathf.Lerp(moveSpeed, sprintSpeed, acceleration * Time.deltaTime);
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
-        else
-        {
-            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, acceleration * Time.deltaTime);
-        }
+
+        //if(isGrounded && horizontalMovement > 0 || verticalMovement > 0)
+        //{
+        //    return;
+        //}
+        //else
+        //{
+        //    rb.velocity = Vector3.zero;
+        //}
+
+        //if (Input.GetKey(sprintKey) && isGrounded)
+        //{
+        //    moveSpeed = Mathf.Lerp(moveSpeed, sprintSpeed, acceleration * Time.deltaTime);
+        //}
+        //else
+        //{
+        //    moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, acceleration * Time.deltaTime);
+        //}
     }
 
     void ControlDrag()
@@ -161,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        BetterJump();
         MovePlayer();
     }
 
@@ -168,16 +202,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isGrounded && !OnSlope())
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
+            rb.AddForce(moveDirection.normalized, ForceMode.Impulse);
         }
         else if (isGrounded && OnSlope())
         {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
+            rb.AddForce(slopeMoveDirection.normalized, ForceMode.Impulse);
         }
         else if (!isGrounded)
         {
             //rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier * airMultiplier, ForceMode.Impulse);
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Impulse);
+            rb.AddForce(moveDirection.normalized, ForceMode.Impulse);
         }
     }
 }
