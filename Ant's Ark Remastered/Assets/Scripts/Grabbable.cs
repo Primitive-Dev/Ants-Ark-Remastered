@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Grabbable : MonoBehaviour
 {
+    //I USED TO USE JOINTS TO ATTACH OBJECTS TO PLAYER
+    //BUT IT HAD ISSUES I DIDNT PREDICT: MOVING WITH OBJECT, JITTERY ROTATION ETC..
     //public Rigidbody playerRb;
     public Rigidbody rb;
     public Collider collider;
@@ -19,6 +21,7 @@ public class Grabbable : MonoBehaviour
         //playerRb.mass += rb.mass;
         print("Grabbed");
         collider.isTrigger = true;
+        rb.isKinematic = true;
     }
     
     public void Dropped()
@@ -26,5 +29,6 @@ public class Grabbable : MonoBehaviour
         //playerRb.mass -= rb.mass;
         print("Dropped");
         collider.isTrigger = false;
+        rb.isKinematic = false;
     }
 }

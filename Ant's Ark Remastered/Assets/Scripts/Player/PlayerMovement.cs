@@ -9,8 +9,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform camera;
 
     [Header("Rotation")]
-    [SerializeField] float turnSmoothTime;
-    float turnSmoothVelocity;
+    [SerializeField] float rotationSpeed = 10f; // The speed at which the player rotates
+
+    //[SerializeField] float turnSmoothTime;
+    //float turnSmoothVelocity;
     
 
     [Header("Movement")]
@@ -48,6 +50,9 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
 
+    Vector3 cameraForward;
+    Vector3 cameraRight;
+
     Rigidbody rb;
 
     RaycastHit slopeHit;
@@ -82,7 +87,9 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
+
         MyInput();
+
         ControlDrag();
         ControlSpeed();
 
@@ -106,8 +113,8 @@ public class PlayerMovement : MonoBehaviour
         verticalMovement = Input.GetAxisRaw("Vertical");
 
         //Movement Relative to camera. Ignores up/down movement if camera is looking up/down
-        Vector3 cameraForward = camera.transform.forward;
-        Vector3 cameraRight = camera.transform.right;
+        cameraForward = camera.transform.forward;
+        cameraRight = camera.transform.right;
         
         cameraForward.y = 0;
         cameraRight.y = 0;
@@ -117,14 +124,6 @@ public class PlayerMovement : MonoBehaviour
 
 
         moveDirection = cameraForward * verticalMovement + cameraRight * horizontalMovement;
-        
-        //Handle Rotation
-        if(moveDirection.magnitude >= 0.1)
-        {
-            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0, angle, 0);
-        }
     }
 
     private void BetterJump()
@@ -194,8 +193,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleRotation();
         BetterJump();
         MovePlayer();
+    }
+
+    void HandleRotation()
+    {
+        ////Handle Rotation
+
+        cameraForward.y = 0f; // Set y component to 0 to prevent tilting
+        Quaternion desiredRotation = Quaternion.LookRotation(cameraForward);
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime);
+
     }
 
     void MovePlayer()

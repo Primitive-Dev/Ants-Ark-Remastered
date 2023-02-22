@@ -78,14 +78,11 @@ public class Grabber : MonoBehaviour
     {
         heldGrabbable = grabbableInReach;
         Grabbable grabbable = heldGrabbable;
-
         grabbable.Grabbed();
 
-        joint.connectedBody = heldGrabbable.GetComponent<Rigidbody>();
-    
+        //joint.connectedBody = heldGrabbable.GetComponent<Rigidbody>();
 
-
-        //heldGrabbable.transform.SetParent(transform);
+        heldGrabbable.transform.SetParent(transform);
         //heldGrabbable.Grabbed();
         holdingSomething = true;
     }
@@ -96,9 +93,9 @@ public class Grabber : MonoBehaviour
 
         grabbable.Dropped();
         //heldGrabbable.Dropped();
-        //heldGrabbable.transform.SetParent(null);
+        heldGrabbable.transform.SetParent(null);
 
-        joint.connectedBody = null;
+        //joint.connectedBody = null;
 
         heldGrabbable = null;
         holdingSomething = false;
