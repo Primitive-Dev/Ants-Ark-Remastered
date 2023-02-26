@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public TimerManager timerManager;
-    public GameObject UIManager;
+    public UIManager UIManager;
 
     public bool paused;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
@@ -26,8 +27,20 @@ public class GameManager : MonoBehaviour
 
     public void Win()
     {
-        print("wIN");
+        print("Win");
         //timerManager;
+
+        timerManager.CheckHighScore();
+        timerManager.UpdateHighScoreText();
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (paused)
+        {
+            PauseGame();
+        }
     }
 
     public void PauseGame()
@@ -35,13 +48,23 @@ public class GameManager : MonoBehaviour
         if (!paused)
         {
             paused = true;
+            UIManager.PauseUI.SetActive(true);
             Time.timeScale = 0;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
         }
         else
         {
             paused = false;
+            UIManager.PauseUI.SetActive(false);
             Time.timeScale = 1;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
         }
-        
+
     }
+
+
 }

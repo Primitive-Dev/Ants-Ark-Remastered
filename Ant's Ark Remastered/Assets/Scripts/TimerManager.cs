@@ -8,6 +8,7 @@ using System;
 public class TimerManager : MonoBehaviour
 {
     public TextMeshProUGUI timerUI;
+    public TextMeshProUGUI highScoreUI;
 
     public float currentTime;
 
@@ -18,9 +19,14 @@ public class TimerManager : MonoBehaviour
 
     private void Start()
     {
+        //highScoreUI.text = PlayerPrefs.GetFloat("HighScore").ToString();
+        
+
         timeFormats.Add(TimerFormats.Whole, "0");
         timeFormats.Add(TimerFormats.TenthDecimal, "0.0");
         timeFormats.Add(TimerFormats.HundrethDecimal, "0.00");
+
+        highScoreUI.text = hasFormat ? "HighScore: " + PlayerPrefs.GetFloat("HighScore").ToString(timeFormats[format]) : "HighScore: " + PlayerPrefs.GetFloat("HighScore").ToString();
 
     }
 
@@ -35,7 +41,28 @@ public class TimerManager : MonoBehaviour
 
     private void SetTimerText()
     {
-        timerUI.text = hasFormat ? currentTime.ToString(timeFormats[format]) : currentTime.ToString();
+        timerUI.text = hasFormat ? "Time: " + currentTime.ToString(timeFormats[format]) : "Time: " + currentTime.ToString();
+    }
+
+    //Sets Best Score if larger than previous
+    public void CheckHighScore()
+    {
+        if (currentTime < PlayerPrefs.GetFloat("HighScore", 10000))
+        {
+            PlayerPrefs.SetFloat("HighScore", currentTime);
+
+        }
+    }
+
+    public void UpdateHighScoreText()
+    {
+        //highScoreUI.text = $"HighScore: {PlayerPrefs.GetFloat("HighScore", 1000)}";
+        highScoreUI.text = hasFormat ? "HighScore: " + PlayerPrefs.GetFloat("HighScore").ToString(timeFormats[format]) : "HighScore: " + PlayerPrefs.GetFloat("HighScore").ToString();
+    }
+
+    public void ResetHighScore()
+    {
+        PlayerPrefs.DeleteKey("HighScore");
     }
 }
 
